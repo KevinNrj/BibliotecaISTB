@@ -8,6 +8,7 @@ import '../models/prestamo_model.dart';
 class ApiService {
   static final String baseUrl = dotenv.env['BACKEND_URL'] ?? '';
 
+  // 📚 Obtener todos los libros
   static Future<List<Libro>> obtenerLibros() async {
     try {
       final res = await http.get(Uri.parse("$baseUrl/listar_libros.php"));
@@ -18,6 +19,7 @@ class ApiService {
     }
   }
 
+  // 🗂 Obtener todas las categorías
   static Future<List<Map<String, dynamic>>> obtenerCategorias() async {
     try {
       final res = await http.get(Uri.parse("$baseUrl/listar_categorias.php"));
@@ -28,6 +30,7 @@ class ApiService {
     }
   }
 
+  // 🎓 Obtener todas las carreras
   static Future<List<Map<String, dynamic>>> obtenerCarreras() async {
     try {
       final res = await http.get(Uri.parse("$baseUrl/listar_carreras.php"));
@@ -38,6 +41,7 @@ class ApiService {
     }
   }
 
+  // 🔍 Filtrar libros por categoría, carrera o título
   static Future<List<Libro>> obtenerLibrosFiltrados({
     String? categoria,
     String? carrera,
@@ -60,22 +64,33 @@ class ApiService {
     }
   }
 
-  static Future<String> crearPrestamo(
-      String codigoUsuario, String codigoLibro) async {
+  // 📝 Registrar préstamo
+  static Future<Map<String, dynamic>> crearPrestamo(
+    String codigoUsuario,
+    String codigoLibro,
+    String fechaEntrega,
+    String horaEntrega,
+  ) async {
     try {
       final res = await http.post(
         Uri.parse("$baseUrl/crear_prestamo.php"),
         body: {
           'codigo_usuario': codigoUsuario,
           'codigo_libro': codigoLibro,
+          'fecha_entrega': fechaEntrega,
+          'hora_entrega': horaEntrega,
         },
       );
-      return res.body;
+      return jsonDecode(res.body);
     } catch (e) {
-      return "error: $e";
+      return {
+        "success": false,
+        "message": "❌ Error de conexión: $e",
+      };
     }
   }
 
+  // 📖 Obtener historial de préstamos del usuario
   static Future<List<Prestamo>> obtenerHistorial(String codigoUsuario) async {
     try {
       print('📤 Enviando código de usuario: $codigoUsuario');
@@ -85,9 +100,8 @@ class ApiService {
         body: {'codigo_usuario': codigoUsuario},
       );
 
-      print('📥 Contenido de res.body: ${res.body}');
-
-      if (!res.headers['content-type']!.contains('application/json')) {
+      final contentType = res.headers['content-type'];
+      if (contentType == null || !contentType.contains('application/json')) {
         throw Exception("⚠️ Respuesta no válida: el servidor no devolvió JSON");
       }
 
@@ -97,6 +111,32 @@ class ApiService {
     } catch (e) {
       print("🛑 Error al obtener historial: $e");
       throw Exception("Error al cargar historial.");
+    }
+  }
+
+  // 👤 Obtener datos del usuario por código
+  static Future<Map<String, dynamic>?> obtenerDatosUsuario(
+      String codigo) async {
+    try {
+      final res = await http.post(
+        Uri.parse("$baseUrl/obtener_datos_usuario.php"),
+        body: {'codigo_usuario': codigo},
+      );
+
+      final data = jsonDecode(res.body);
+      if (data["error"] == false) {
+        return {
+          "nombre": data["nombre"],
+          "apellido": data["apellido"],
+          "carrera": data["carrera"],
+          "rol": data["Codigo_Rol"],
+        };
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("🛑 Error al obtener usuario: $e");
+      return null;
     }
   }
 }

@@ -22,4 +22,19 @@ class Prestamo {
       observacion: json['observacion'] ?? '',
     );
   }
+
+  /// Método auxiliar para formato de fecha personalizado (dd/mm/yyyy)
+  String get fechaFormateada {
+    final partes = fechaPrestamo.split("-");
+    if (partes.length != 3) return fechaPrestamo;
+    return "${partes[2]}/${partes[1]}/${partes[0]}";
+  }
+
+  /// Método auxiliar para mostrar solo hora en formato HH:mm
+  String get horaFormateada {
+    return horaEntrega.length >= 5 ? horaEntrega.substring(0, 5) : horaEntrega;
+  }
+
+  /// Método opcional para estado visual
+  bool get estaPrestado => observacion.toLowerCase() == "prestado";
 }

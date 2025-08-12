@@ -41,27 +41,22 @@ class _EditarUsuarioScreenState extends State<EditarUsuarioScreen> {
   }
 
   Future<void> cargarRoles() async {
-    final response = await http.get(
-      Uri.parse("${dotenv.env['BACKEND_URL']}/listar_roles.php"),
-    );
+    final response = await http
+        .get(Uri.parse("${dotenv.env['BACKEND_URL']}/listar_roles.php"));
     if (response.statusCode == 200) {
-      print(response.body);
       final data = jsonDecode(response.body);
       setState(() {
         roles = List<Map<String, dynamic>>.from(data);
         loadingRoles = false;
       });
     } else {
-      setState(() {
-        loadingRoles = false;
-      });
+      setState(() => loadingRoles = false);
     }
   }
 
   Future<void> cargarCarreras() async {
-    final response = await http.get(
-      Uri.parse("${dotenv.env['BACKEND_URL']}/listar_carreras.php"),
-    );
+    final response = await http
+        .get(Uri.parse("${dotenv.env['BACKEND_URL']}/listar_carreras.php"));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       setState(() {
@@ -69,9 +64,7 @@ class _EditarUsuarioScreenState extends State<EditarUsuarioScreen> {
         loadingCarreras = false;
       });
     } else {
-      setState(() {
-        loadingCarreras = false;
-      });
+      setState(() => loadingCarreras = false);
     }
   }
 
@@ -129,25 +122,48 @@ class _EditarUsuarioScreenState extends State<EditarUsuarioScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Editar Usuario")),
+      backgroundColor: const Color(0xFFFFF2DF), // Fondo crema claro
+      appBar: AppBar(
+        title: const Text("Editar Usuario"),
+        backgroundColor: const Color(0xFFD90B13), // Rojo personalizado
+        foregroundColor: Colors.white,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             TextField(
               controller: nombreCtrl,
-              decoration: const InputDecoration(labelText: "Nombre"),
+              decoration: InputDecoration(
+                labelText: "Nombre",
+                filled: true,
+                fillColor: Colors.white,
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: emailCtrl,
-              decoration: const InputDecoration(labelText: "Correo"),
+              decoration: InputDecoration(
+                labelText: "Correo",
+                filled: true,
+                fillColor: Colors.white,
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
               keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 10),
             TextField(
               controller: passwordCtrl,
-              decoration: const InputDecoration(labelText: "Nueva contraseña"),
+              decoration: InputDecoration(
+                labelText: "Nueva contraseña",
+                filled: true,
+                fillColor: Colors.white,
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
               obscureText: true,
             ),
             const SizedBox(height: 10),
@@ -155,41 +171,54 @@ class _EditarUsuarioScreenState extends State<EditarUsuarioScreen> {
                 ? const CircularProgressIndicator()
                 : DropdownButtonFormField<String>(
                     value: rolSeleccionado,
-                    decoration: const InputDecoration(labelText: "Rol"),
+                    decoration: InputDecoration(
+                      labelText: "Rol",
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
                     items: roles
                         .map((rol) => DropdownMenuItem<String>(
                               value: rol['Codigo_Rol'].toString(),
                               child: Text(rol['Nombre_Rol']),
                             ))
                         .toList(),
-                    onChanged: (val) {
-                      setState(() {
-                        rolSeleccionado = val;
-                      });
-                    },
+                    onChanged: (val) => setState(() => rolSeleccionado = val),
                   ),
             const SizedBox(height: 10),
             loadingCarreras
                 ? const CircularProgressIndicator()
                 : DropdownButtonFormField<String>(
                     value: carreraSeleccionada,
-                    decoration: const InputDecoration(labelText: "Carrera"),
+                    decoration: InputDecoration(
+                      labelText: "Carrera",
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
                     items: carreras
                         .map((carrera) => DropdownMenuItem<String>(
                               value: carrera['Codigo_Carrera'].toString(),
                               child: Text(carrera['Nombre_Carrera']),
                             ))
                         .toList(),
-                    onChanged: (val) {
-                      setState(() {
-                        carreraSeleccionada = val;
-                      });
-                    },
+                    onChanged: (val) =>
+                        setState(() => carreraSeleccionada = val),
                   ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
               icon: const Icon(Icons.save),
               label: const Text("Guardar Cambios"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFD90B13), // Rojo personalizado
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 48),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
               onPressed: guardarCambios,
             ),
           ],

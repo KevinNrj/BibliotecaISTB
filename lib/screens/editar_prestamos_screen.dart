@@ -1,3 +1,4 @@
+// ...importaciones iguales
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -65,22 +66,11 @@ class _EditarPrestamosScreenState extends State<EditarPrestamosScreen> {
   Future<void> guardarCambios(int index) async {
     final prestamo = prestamos[index];
 
-    // Extraemos datos con fallback para evitar enviar null
     final codigo = prestamo['Codigo_Prestamo']?.toString() ?? '';
     final fecha = prestamo['FechaDevolucion_Prestamo']?.toString() ?? '';
     final hora = prestamo['HoraDevolucion_Prestamo']?.toString() ?? '';
     final dias = prestamo['NumeroDias_Prestamo']?.toString() ?? '0';
     final observacion = prestamo['Observacion_Prestamo']?.toString() ?? '';
-
-    // Debug para ver qué datos se van a enviar
-    print('Enviando datos a backend:');
-    print({
-      'Codigo_Prestamo': codigo,
-      'FechaDevolucion_Prestamo': fecha,
-      'HoraDevolucion_Prestamo': hora,
-      'NumeroDias_Prestamo': dias,
-      'Observacion_Prestamo': observacion,
-    });
 
     try {
       final response = await http.post(
@@ -101,7 +91,6 @@ class _EditarPrestamosScreenState extends State<EditarPrestamosScreen> {
             const SnackBar(content: Text("✅ Cambios guardados exitosamente")),
           );
         } else {
-          // Mostrar error enviado desde PHP
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Error: ${data['error'] ?? 'Desconocido'}")),
           );
@@ -121,16 +110,26 @@ class _EditarPrestamosScreenState extends State<EditarPrestamosScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Editar Préstamos")),
+      backgroundColor: const Color(0xFFFFF2DF),
+      appBar: AppBar(
+        title: const Text("Editar Préstamos"),
+        backgroundColor: const Color(0xFFD90B13),
+        foregroundColor: Colors.white,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             TextField(
               controller: buscadorCtrl,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Buscar por nombre, apellido o código',
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -165,9 +164,12 @@ class _EditarPrestamosScreenState extends State<EditarPrestamosScreen> {
 
                             final estadoColor = (observacion == 'Devuelto')
                                 ? Colors.green
-                                : Colors.red;
+                                : const Color(0xFFD90B13);
 
                             return Card(
+                              elevation: 3,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
                               margin: const EdgeInsets.symmetric(vertical: 8),
                               child: Padding(
                                 padding: const EdgeInsets.all(12),
@@ -179,11 +181,12 @@ class _EditarPrestamosScreenState extends State<EditarPrestamosScreen> {
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: estadoColor,
+                                        fontSize: 16,
                                       ),
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
-                                        "Código préstamo: ${p['Codigo_Prestamo']}"),
+                                        "📄 Código préstamo: ${p['Codigo_Prestamo']}"),
                                     const SizedBox(height: 12),
                                     ListTile(
                                       leading: const Icon(Icons.calendar_today,
@@ -259,17 +262,22 @@ class _EditarPrestamosScreenState extends State<EditarPrestamosScreen> {
                                             fontWeight: FontWeight.w600),
                                       ),
                                     ),
+                                    const SizedBox(height: 8),
                                     DropdownButtonFormField<String>(
                                       value: observacion,
                                       decoration: const InputDecoration(
-                                          labelText: 'Observación'),
+                                        labelText: 'Observación',
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
                                       items: const [
                                         DropdownMenuItem(
                                             value: 'Prestado',
-                                            child: Text('Prestado')),
+                                            child: Text('📕 Prestado')),
                                         DropdownMenuItem(
                                             value: 'Devuelto',
-                                            child: Text('Devuelto')),
+                                            child: Text('📗 Devuelto')),
                                       ],
                                       onChanged: (val) {
                                         if (val != null) {
@@ -280,10 +288,21 @@ class _EditarPrestamosScreenState extends State<EditarPrestamosScreen> {
                                         }
                                       },
                                     ),
-                                    const SizedBox(height: 10),
+                                    const SizedBox(height: 12),
                                     ElevatedButton.icon(
                                       icon: const Icon(Icons.save),
                                       label: const Text("Guardar cambios"),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            const Color(0xFFD90B13),
+                                        foregroundColor: Colors.white,
+                                        minimumSize:
+                                            const Size(double.infinity, 48),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                      ),
                                       onPressed: () => guardarCambios(index),
                                     ),
                                   ],

@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'editar_usuario_screen.dart'; // Import necesario
+import 'editar_usuario_screen.dart';
 
 class ActualizarUsuarioScreen extends StatefulWidget {
   const ActualizarUsuarioScreen({super.key});
@@ -73,22 +73,37 @@ class _ActualizarUsuarioScreenState extends State<ActualizarUsuarioScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Actualizar Usuario")),
+      backgroundColor: const Color(0xFFFFF2DF), // Fondo crema
+      appBar: AppBar(
+        title: const Text("Actualizar Usuario"),
+        backgroundColor: const Color(0xFFD90B13),
+        foregroundColor: Colors.white,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             TextField(
               controller: buscadorCtrl,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
                 labelText: "Buscar por nombre, apellido o carrera",
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
             const SizedBox(height: 16),
             Expanded(
               child: usuariosEncontrados.isEmpty
-                  ? const Center(child: Text("🔎 No hay resultados"))
+                  ? const Center(
+                      child: Text(
+                        "🔎 No hay resultados",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    )
                   : ListView.builder(
                       itemCount: usuariosEncontrados.length,
                       itemBuilder: (context, index) {
@@ -96,16 +111,40 @@ class _ActualizarUsuarioScreenState extends State<ActualizarUsuarioScreen> {
                         final nombre =
                             "${u['Nombre_Usuario']} ${u['Apellido_Usuario']}";
                         final correo = u['Email_Usuario'];
-                        final rol = u['Codigo_Rol'];
-                        final carrera = u['Codigo_Carrera'];
+                        final rol = u['Nombre_Rol'] ?? u['Codigo_Rol'];
+                        final carrera =
+                            u['Nombre_Carrera'] ?? u['Codigo_Carrera'];
 
                         return Card(
+                          elevation: 3,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
                           margin: const EdgeInsets.symmetric(vertical: 6),
                           child: ListTile(
-                            title: Text("👤 $nombre"),
-                            subtitle: Text(
-                                "📧 $correo\n🎓 Carrera: $carrera | Rol: $rol"),
-                            trailing: const Icon(Icons.edit),
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 16),
+                            leading:
+                                const Icon(Icons.person, color: Colors.red),
+                            title: Text(
+                              nombre,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            subtitle: Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("📧 $correo"),
+                                  Text("🎓 Carrera: $carrera"),
+                                  Text("🔐 Rol: $rol"),
+                                ],
+                              ),
+                            ),
+                            trailing: const Icon(Icons.edit,
+                                color: Color(0xFFD90B13)),
                             onTap: () {
                               Navigator.push(
                                 context,
